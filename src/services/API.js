@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Message, xwwwfurlenc, getItem } from './index';
+import {Message, xwwwfurlenc, getItem} from './index';
 import CookieManager from 'react-native-cookies';
 
 export const API_URL = 'https://backend.edelweiss.id/api/';
@@ -23,36 +23,36 @@ export function PostLogin(url, form) {
     console.log(`Clear Cookie ${url} =>`, res);
   });
   return new Promise((response, reject) => {
-    fetch(`${API_URL}${url}`, {
-      method: 'POST',
-      body: xwwwfurlenc(form),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Cookie: null,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        response(res);
-      })
-      .catch((error) => {
-        reject(error.response);
-      });
-
-    // axios
-    //   .post(`${API_URL}${url}`, xwwwfurlenc(form), {
+    //   fetch(`${API_URL}${url}`, {
+    //     method: 'POST',
+    //     body: xwwwfurlenc(form),
     //     headers: {
     //       'Content-Type': 'application/x-www-form-urlencoded',
     //       Cookie: null,
     //     },
     //   })
-    //   .then((res) => {
-    //     console.warn('res', res);
-    //     response(res);
-    //   }) // promise
-    //   .catch((error) => {
-    //     reject(error.response);
-    //   });
+    //     .then((res) => res.json())
+    //     .then((res) => {
+    //       response(res);
+    //     })
+    //     .catch((error) => {
+    //       reject(error.response);
+    //     });
+
+    axios
+      .post(`${API_URL}${url}`, xwwwfurlenc(form), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Cookie: null,
+        },
+      })
+      .then((res) => {
+        console.warn('res', res);
+        response(res);
+      }) // promise
+      .catch((error) => {
+        reject(error.response);
+      });
   });
 }
 

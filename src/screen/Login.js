@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, ImageBackground} from 'react-native';
+import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {SafeAreaView} from 'react-navigation';
 import * as eva from '@eva-design/eva';
 import {
@@ -9,17 +9,20 @@ import {
   Input,
   Icon,
 } from '@ui-kitten/components';
-
-import {ApplicationStyles, Fonts, Colors} from '../themes';
-
 import FastImage from 'react-native-fast-image';
-
-import {Get, PostLogin} from '../services/API';
-import {getItem, saveItem, removeItem, Message} from '../services';
-
 import {connect} from 'react-redux';
+
+// Service
+import {PostLogin} from '../services/API';
+import {saveItem, Message} from '../services';
+
+// Action
 import {setIsLoggedIn} from '../actions/auth/authActions';
 
+// Theme
+import {ApplicationStyles, Fonts, Colors} from '../themes';
+
+// Components
 import Button from '../components/Button';
 import Loading from '../components/Loading';
 
@@ -52,9 +55,9 @@ class Login extends Component {
     PostLogin('auth/get_tokens', data)
       .then((res) => {
         console.warn('login', res);
-        if (res.hasOwnProperty('uid')) {
+        if (res.data.hasOwnProperty('uid')) {
           Message(null, 'Selamat datang di RS Edelweiss 😊', 'info');
-          saveItem('code', {...res, passed: true}).then(() => {
+          saveItem('code', {...res.data, passed: true}).then(() => {
             this.props.setIsloggedId(true);
             this.props.navigation.navigate('Home');
           });
@@ -81,13 +84,9 @@ class Login extends Component {
     };
 
     const renderIconEye = (style) => (
-      <Icon {...style} name={secureTextEntry ? 'eye-off' : 'eye'} />
-    );
-
-    const Header = (props) => (
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Edelweiss for Doctor</Text>
-      </View>
+      <TouchableWithoutFeedback onPress={onIconPress}>
+        <Icon {...style} name={secureTextEntry ? 'eye-off' : 'eye'} />
+      </TouchableWithoutFeedback>
     );
 
     const image = require('../../assets/images/logo/01-Primary-logo.png');
@@ -95,7 +94,6 @@ class Login extends Component {
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <ApplicationProvider {...eva} theme={eva.light}>
-          {/* <Header /> */}
           {loadingPost && <Loading label="Mohon tunggu ..." />}
           <Layout
             style={
@@ -107,12 +105,20 @@ class Login extends Component {
                 padding: 30,
               })
             }>
-            <View style={{marginBottom: 40}}>
+            <View
+              style={{
+                width: 250,
+                height: 80,
+              }}>
+              {/* <Image style={{width: 120, height: 70}} source={image} /> */}
               <FastImage
-                style={styles.imageUser}
+                style={{width: '100%', height: 70}}
                 source={image}
-                resizeMode={FastImage.resizeMode.cover}
+                resizeMode={FastImage.resizeMode.contain}
               />
+              <Text style={[Fonts.style.normal, {textAlign: 'right'}]}>
+                For Doctor
+              </Text>
             </View>
             <Layout style={{width: '100%'}}>
               <Layout>
@@ -133,7 +139,7 @@ class Login extends Component {
                   placeholder="Masukan Password"
                   value={this.state.password}
                   onChangeText={(val) => this.setState({password: val})}
-                  icon={renderIconEye}
+                  accessoryRight={renderIconEye}
                   secureTextEntry={secureTextEntry}
                   labelStyle={styles.label}
                   returnKeyType="done"
@@ -175,8 +181,6 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   imageUser: {
-    width: 350,
-    height: 80,
     overflow: 'hidden',
   },
   header: {

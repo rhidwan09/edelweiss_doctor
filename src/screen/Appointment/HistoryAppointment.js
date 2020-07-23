@@ -41,7 +41,7 @@ export default class HistoryAppointment extends Component {
     });
     getItem('doctor').then((res) => {
       Get(
-        `edelweiss.encounter?filters=[('doctor','=',${res[0].id}),('state','=','finished')]`,
+        `edelweiss.encounter/get?filters=[('doctor','=',${res[0].id}),('state','=','finished')]`,
       )
         .then((res) => {
           if (res.hasOwnProperty('results')) {

@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { View, FlatList } from 'react-native';
 import { Layout } from '@ui-kitten/components';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
+import Pusher from 'pusher-js/react-native';
 
+import { PusherConf } from '../services';
 import { EMPTY_USER_IMAGE, Get } from '../services/API';
 
 import { ApplicationStyles } from '../themes';
 
 import CardMenuItems from './CardMenuItems';
+import { connect } from 'react-redux';
 
-export default class CardMenu extends Component {
+class CardMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,46 +22,48 @@ export default class CardMenu extends Component {
   }
 
   componentDidMount() {
+    var pusher = new Pusher(PusherConf.key, PusherConf.options);
+    var chanel = pusher.subscribe('edelweiss');
+    let self = this;
+    chanel.bind('telehealth-finished', function (data) {
+      let encount = self.props.authReducer.inboxLength - 1;
+      if (encount > 0) {
+        self.props.setInboxLength(encount);
+      } else {
+        self.props.setInboxLength(0);
+      }
+    });
+
     this.getEncounter();
   }
 
   getEncounter() {
-    Get(
-      "edelweiss.encounter?filters=[('encounter_type','in',['onsite','telehealth']),('state','in',['waiting','consulting'])]",
-    )
-      .then((res) => {
-        const task = res.count;
-        this.setState({
-          loadingDoc: false,
-          data: [
-            {
-              imageUrl: 'http://via.placeholder.com/160x160',
-              title: 'Appointment',
-              color: '#11a0db',
-              task: `${task ? task : '0'} Task`,
-              link: 'ListAppointment',
-            },
-            {
-              imageUrl: 'http://via.placeholder.com/160x160',
-              title: 'Schedule',
-              color: '#ed1d85',
-              link: 'ListSchedule',
-            },
-            {
-              imageUrl: 'http://via.placeholder.com/160x160',
-              title: 'Patients',
-              color: '#5b388c',
-              link: 'PatientFavorit',
-            },
-          ],
-        });
-      })
-      .catch((err) => {
-        this.setState({
-          loadingNews: false,
-        });
-        console.warn('err', err);
-      });
+    this.setState({
+      loadingNews: false,
+      data: [
+        {
+          imageUrl: 'http://via.placeholder.com/160x160',
+          title: 'Appointment',
+          color: '#11a0db',
+          task: true,
+          link: 'ListAppointment',
+        },
+        {
+          imageUrl: 'http://via.placeholder.com/160x160',
+          title: 'Schedule',
+          color: '#ed1d85',
+          task: false,
+          link: 'ListSchedule',
+        },
+        {
+          imageUrl: 'http://via.placeholder.com/160x160',
+          title: 'Patients',
+          color: '#5b388c',
+          task: false,
+          link: 'PatientFavorit',
+        },
+      ],
+    });
   }
 
   render() {
@@ -97,7 +102,7 @@ export default class CardMenu extends Component {
           </View>
         )}
         {!this.state.loadingDoc && (
-          <View>
+          <View style={{ marginTop: 10 }}>
             <FlatList
               key="flatlist"
               extraData={this.state.data}
@@ -115,3 +120,21 @@ export default class CardMenu extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    authReducer: state.authReducer,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setInboxLength: (length) =>
+      dispatch({
+        type: 'SET_INBOX_LENGTH',
+        payload: length,
+      }),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CardMenu);

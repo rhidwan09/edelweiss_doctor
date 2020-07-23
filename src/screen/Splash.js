@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, ImageBackground, Animated } from 'react-native';
-import { Layout, Text } from '@ui-kitten/components';
-import { getItem } from '../services';
-import { Get } from '../services/API';
+import React, {Component} from 'react';
+import {StyleSheet, View, Animated} from 'react-native';
+import {Layout, Text} from '@ui-kitten/components';
+import {getItem} from '../services';
+import {Get} from '../services/API';
 
-import { Colors } from '../themes';
+import {Colors} from '../themes';
 
 export default class Splash extends Component {
   constructor(props) {
@@ -76,7 +76,7 @@ export default class Splash extends Component {
             </View>
             <View>
               <Text
-                style={[styles.textLogo, { fontStyle: 'italic' }]}
+                style={[styles.textLogo, {fontStyle: 'italic'}]}
                 category="s1">
                 For
               </Text>
@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flexDirection: 'column',
-    //backgroundColor: 'rgba(0,0,0,.2)',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 10,

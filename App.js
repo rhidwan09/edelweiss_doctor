@@ -7,6 +7,9 @@ import * as eva from '@eva-design/eva';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import FlashMessage from 'react-native-flash-message';
 
+// import configureStore from './src/Store.js';
+// const store = configureStore();
+
 import Route from './src/Route';
 
 class App extends Component {

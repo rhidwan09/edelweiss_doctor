@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {Layout} from '@ui-kitten/components';
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Layout } from '@ui-kitten/components';
 import FastImage from 'react-native-fast-image';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 
-import {EMPTY_IMAGE} from '../services/helpers';
-import {EMPTY_USER_IMAGE} from '../services/API';
-import {Fonts} from '../themes';
+import { EMPTY_IMAGE } from '../services/helpers';
+import { EMPTY_USER_IMAGE } from '../services/API';
+import { Fonts } from '../themes';
 
 export default class CardArticle extends Component {
   constructor(props) {
@@ -31,10 +31,10 @@ export default class CardArticle extends Component {
             style={styles.itemList}
             onPress={() =>
               this.props.navigation.navigate('DetailArticle', {
-                id: this.props.data.id,
+                data: this.props.data
               })
             }>
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
               <Text numberOfLines={2} style={Fonts.style.articleSubTitle}>
                 {this.props.data.name}
               </Text>

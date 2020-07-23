@@ -13,17 +13,18 @@ import Moment from 'react-moment';
 import 'moment/locale/id';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import Pusher from 'pusher-js/react-native';
+import { connect } from 'react-redux';
 
 import CardMenu from '../components/CardMenu';
 import HeaderStatusbar from '../components/HeaderStatusbar';
 import ArticleList from '../components/ArticleList';
 
 import { EMPTY_USER_IMAGE, Get } from '../services/API';
-import { getItem, saveItem } from '../services';
+import { getItem, saveItem, PusherConf } from '../services';
 import { ApplicationStyles, Fonts, Colors } from '../themes';
 import HeaderStatusbarIOS from '../components/HeaderStatusbarIOS';
 
-export default class Home extends Component {
+class Home extends Component {
   static navigationOptions = {
     headerShown: false,
   };
@@ -41,16 +42,34 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
+    var pusher = new Pusher(PusherConf.key, PusherConf.options);
+    var chanel = pusher.subscribe('edelweiss');
+    let self = this;
+    chanel.bind('telehealth-created', function (data) {
+      let encount = self.props.authReducer.inboxLength + 1;
+      self.props.setInboxLength(encount);
+    });
+
     this.getDoctor();
     this.getArticle();
   }
 
   getDoctor() {
     getItem('code').then((res) => {
-      console.warn('res', res);
       Get(`edelweiss.physician/get?filters=[('related_user','=',${res.uid})]`)
         .then((res) => {
           const parsed = res.results;
+          Get(
+            "edelweiss.encounter?filters=[('encounter_type','in',['onsite','telehealth']),('state','in',['waiting','consulting'])]",
+          )
+            .then((res) => {
+              if (res.hasOwnProperty('results')) {
+                this.props.setInboxLength(res.count);
+              } else {
+                this.props.setInboxLength(0);
+              }
+            })
+            .catch((err) => { });
           saveItem('doctor', parsed).then(() => {
             this.setState({
               loadingDoc: false,
@@ -178,6 +197,24 @@ export default class Home extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    authReducer: state.authReducer,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setInboxLength: (length) =>
+      dispatch({
+        type: 'SET_INBOX_LENGTH',
+        payload: length,
+      }),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 const style = StyleSheet.create({
   header: {

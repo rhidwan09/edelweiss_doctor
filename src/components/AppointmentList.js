@@ -81,7 +81,7 @@ class AppointmentList extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         {!this.props.schedule && (
           <Layout style={[{ alignItems: 'center' }, styles.CardList]}>
             <View style={styles.CardDate}>
@@ -94,7 +94,7 @@ class AppointmentList extends Component {
             </View>
             <View style={styles.CardDetail}>
               <Text style={Fonts.style.h6} category="s1">
-                {this.props.data.patient[1]}
+                {this.props.data.patient.name}
               </Text>
               <Text style={{ color: Colors.DARK100 }} category="s2">
                 {this.props.data.comments}
@@ -201,6 +201,7 @@ class AppointmentList extends Component {
 
 const styles = StyleSheet.create({
   CardList: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderRadius: 5,
