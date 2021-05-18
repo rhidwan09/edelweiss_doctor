@@ -23,7 +23,7 @@
     "react-moment": "^0.9.7",
     "react-native": "0.62.2",
     "react-native-cookies": "^3.3.0",
-    "react-native-fast-image": "^7.0.2",
+    "react-native-fast-image": "^8.3.0",
     "react-native-flash-message": "^0.1.15",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-inappbrowser-reborn": "^3.4.0",
